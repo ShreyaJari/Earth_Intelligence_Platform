@@ -1,13 +1,24 @@
 # Earth Intelligence Platform
 
+<p align="center">
+
+![Python](https://img.shields.io/badge/Python-3.11-blue.svg)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.59-red.svg)
+![GeoAI](https://img.shields.io/badge/GeoAI-Machine%20Learning-success.svg)
+![Sentinel--2](https://img.shields.io/badge/Sentinel--2-Earth%20Observation-orange.svg)
+![scikit--learn](https://img.shields.io/badge/scikit--learn-Random%20Forest-green.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+
+</p>
+
 An integrated GeoAI platform for Earth observation and environmental
 intelligence, built in Python with Streamlit, pystac-client, odc-stac,
 xarray, rioxarray, GeoPandas, and the Microsoft Planetary Computer.
 
-The platform combines eight modular engines - Location, Satellite,
-Terrain, Weather, Land Cover, Risk, and Earth Intelligence engine into a
+The platform combines eight modular engines — Location, Satellite,
+Terrain, Weather, Land Cover, Risk, and Earth Intelligence — into a
 single pipeline that takes a place name and produces an integrated
-environmental risk assessment, with three custom trained machine
+environmental risk assessment, with three custom-trained machine
 learning models woven into the pipeline alongside deterministic
 geospatial analysis.
 
@@ -21,45 +32,80 @@ geospatial analysis.
 - [Development History](#development-history)
 - [Setup](#setup)
 - [How to Use](#how-to-use)
+- [Skills Demonstrated](#skills-demonstrated)
+- [Citation](#citation)
+- [Acknowledgements](#acknowledgements)
+- [Author](#author)
 
 ## Live Demo
 
 [**Try it live →**](https://earthintelligenceplatform-upeeswbrd44n7xgbtcwazt.streamlit.app/)
 
-> **Note:** Free tier hosting has limited memory. Smaller AOIs (e.g.
+> **Note:** Free-tier hosting has limited memory. Smaller AOIs (e.g.
 > Mumbai) run reliably; very large metropolitan AOIs (e.g. Tokyo) may
-> be slow or hit resource limits — see [Known Limitations](#known-limitations).
-> For full performance, run locally (see [Setup](#setup)).
+> be slow or hit resource limits. The Land Cover ML classification
+> model (~1.4GB) is excluded from this deployment for the same reason
+> — WorldCover still works fully; the ML comparison layer is available
+> when running locally. See [Known Limitations](#known-limitations)
+> and [Setup](#setup) for the complete experience.
 
 ## Screenshots
 
-### Home — Location Selection & AOI
+<p align="center">
+<img src="earth_intelligence_platform/assets/screenshots/home.png" width="900">
+</p>
 
-![Home page showing AOI map](earth_intelligence_platform/assets/screenshots/home.png)
+<p align="center">
+<b>Figure 1.</b> Home — Location Selection & AOI.
+</p>
 
-### Satellite Engine — Multi-Tile Acquisition
+<p align="center">
+<img src="earth_intelligence_platform/assets/screenshots/satellite.rgb.png" width="900">
+</p>
 
-![Satellite RGB composite](earth_intelligence_platform/assets/screenshots/satellite.rgb.png)
+<p align="center">
+<b>Figure 2.</b> Satellite Engine — Multi-Tile Acquisition, RGB Composite.
+</p>
 
-### Terrain Engine — Slope Distribution
+<p align="center">
+<img src="earth_intelligence_platform/assets/screenshots/terrain_slope.png" width="900">
+</p>
 
-![Terrain slope histogram and map](earth_intelligence_platform/assets/screenshots/terrain_slope.png)
+<p align="center">
+<b>Figure 3.</b> Terrain Engine — Slope Distribution.
+</p>
 
-### Weather Engine — Climograph
+<p align="center">
+<img src="earth_intelligence_platform/assets/screenshots/weather.png" width="900">
+</p>
 
-![Weather Engine - Climograph](earth_intelligence_platform/assets/screenshots/weather.png)
+<p align="center">
+<b>Figure 4.</b> Weather Engine — Climograph.
+</p>
 
-### Land Cover — Classification with Legend
+<p align="center">
+<img src="earth_intelligence_platform/assets/screenshots/land_cover_engine.png" width="900">
+</p>
 
-![Land cover classification map](earth_intelligence_platform/assets/screenshots/land_cover_engine.png)
+<p align="center">
+<b>Figure 5.</b> Land Cover — Classification with Legend.
+</p>
 
-### Risk Engine — Multi-Hazard Assessment
+<p align="center">
+<img src="earth_intelligence_platform/assets/screenshots/risk.png" width="900">
+</p>
 
-![Risk gauges and comparison chart](earth_intelligence_platform/assets/screenshots/risk.png)
+<p align="center">
+<b>Figure 6.</b> Risk Engine — Multi-Hazard Assessment.
+</p>
 
-### Earth Intelligence Engine — Earth Intelligence Score
+<p align="center">
+<img src="earth_intelligence_platform/assets/screenshots/Earth_score.png" width="900">
+</p>
 
-![Earth Intelligence Score](earth_intelligence_platform/assets/screenshots/Earth_score.png)
+<p align="center">
+<b>Figure 7.</b> Earth Intelligence Engine — Synthesized Earth Intelligence Score.
+</p>
 
 ## Architecture
 
@@ -80,6 +126,7 @@ flowchart TD
     F1((ML: Land Cover Refinement)) -.-> F
     G1((ML: Wildfire Calibration)) -.-> G
 ```
+
 Each engine returns a standardized product object, cached in Streamlit
 session state, so downstream engines and pages can consume upstream
 results without recomputation.
@@ -89,21 +136,21 @@ results without recomputation.
 The Satellite Engine's original design selected a single Sentinel-2
 STAC item per request. For AOIs spanning multiple MGRS tiles (which
 includes most real cities), this silently produced imagery that was
-~99.85% NaN outside a single tile's footprint, a black looking image
+~99.85% NaN outside a single tile's footprint — a black-looking image
 that ran without errors.
 
 The fix reframes tile selection around **acquisitions**: groups of
-same date STAC items whose combined footprint is evaluated against the
+same-date STAC items whose combined footprint is evaluated against the
 AOI as a whole. `group_acquisitions.py` computes real geometric
-coverage percentage and a coverage weighted cloud score per
+coverage percentage and a coverage-weighted cloud score per
 acquisition; `select_acquisition.py` enforces a minimum coverage gate
 before proceeding; `load_imagery.py` mosaics every tile belonging to
 the selected acquisition via `odc.stac.load(groupby="solar_day")`.
 
 ## Machine Learning Components
 
-Three components are genuinely trained models, not hand tuned
-heuristics, each is disclosed honestly, including known weaknesses.
+Three components are genuinely trained models, not hand-tuned
+heuristics — each is disclosed honestly, including known weaknesses.
 
 | Component | Method | Training Data | Validation |
 |---|---|---|---|
@@ -112,7 +159,7 @@ heuristics, each is disclosed honestly, including known weaknesses.
 | **Wildfire Risk Calibration** | Random Forest on weather + vegetation covariates | Real NASA FIRMS fire detections vs. sampled background points, 5 countries | 82% accuracy, 0.81 macro F1 (pilot scale, ~830 points) |
 
 The other four hazards (Flood, Landslide, Urban Heat, Wind Exposure)
-use deterministic, hand weighted formulas, disclosed as such, not
+use deterministic, hand-weighted formulas — disclosed as such, not
 presented as learned models.
 
 ### Case study: diagnosing and fixing a real model failure
@@ -237,8 +284,72 @@ Each engine's page includes an **Advanced Information** and
 **Developer Debug** expander showing the full underlying data, for
 anyone wanting to inspect intermediate values.
 
+## Skills Demonstrated
+
+- Earth Observation & Satellite Remote Sensing (Sentinel-2, Copernicus DEM)
+- STAC-based Geospatial Data Discovery (pystac-client, odc-stac)
+- Multi-Engine Pipeline Architecture & Session State Management
+- Machine Learning (Random Forest classification/calibration, scikit-learn)
+- Feature Engineering for Remote Sensing (spectral indices, SWIR, NDSI, texture)
+- Model Diagnosis & Root-Cause Analysis (Aomori snow/Built-up case study)
+- Geospatial Data Processing (GeoPandas, rioxarray, xarray, rasterio)
+- Multi-Hazard Risk Modeling & Susceptibility Analysis
+- Data Visualization (Plotly, Matplotlib)
+- Cloud Deployment & Dependency Management (Streamlit Community Cloud, Git LFS)
+
 ## Tech Stack
 
 Streamlit · pystac-client · odc-stac · xarray · rioxarray · GeoPandas ·
 scikit-learn · Plotly · Microsoft Planetary Computer · ESA WorldCover ·
 Open-Meteo · NASA FIRMS
+
+## Citation
+
+If you reference this project, please cite it as:
+
+```text
+Jariwala, S. (2026).
+
+Earth Intelligence Platform: An Integrated GeoAI System for
+Environmental Risk Assessment.
+
+GitHub Repository:
+https://github.com/ShreyaJari/Earth_Intelligence_Platform
+```
+
+## Acknowledgements
+
+This project uses open datasets and open-source software from:
+
+- Microsoft Planetary Computer
+- ESA WorldCover
+- Copernicus DEM
+- Sentinel-2 (Copernicus Programme)
+- Open-Meteo
+- NASA FIRMS
+- Streamlit, scikit-learn, GeoPandas, xarray, rioxarray
+
+## Author
+
+**Shreya Jariwala**
+
+This repository was developed as part of my GeoAI portfolio,
+demonstrating an integrated pipeline combining Earth Observation,
+geospatial analytics, and machine learning for environmental
+intelligence.
+
+**Connect with me**
+
+- LinkedIn: *(https://www.linkedin.com/in/shreya-jariwala-61681a171/)*
+- GitHub: https://github.com/ShreyaJari
+
+## License
+
+This project is licensed under the **MIT License**. See the `LICENSE`
+file for additional details.
+
+---
+
+## If you found this project useful, consider giving the repository a star!
+
+Feedback, suggestions, and contributions are always welcome.
