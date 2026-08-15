@@ -229,3 +229,6 @@ __marimo__/
 # Editor
 .vscode/
 .idea/
+
+# Excluded from deploy branch only — see README
+earth_intelligence_platform/models/landcover_classifier.joblib

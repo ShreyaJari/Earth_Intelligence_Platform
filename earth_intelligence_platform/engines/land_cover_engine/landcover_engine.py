@@ -39,8 +39,11 @@ def landcover_engine(
 
     satellite_product : SatelliteProduct, optional
         If provided (Satellite Engine already run for this
-        AOI), also computes a date-specific ML land cover
+        AOI), also attempts a date-specific ML land cover
         classification alongside the static WorldCover result.
+        If the ML model file isn't available (e.g. excluded
+        from a lightweight deployment), this is skipped
+        gracefully — WorldCover still succeeds.
     """
 
     logger.info("Starting Land Cover Engine.")
@@ -78,19 +81,40 @@ def landcover_engine(
         # ---------------------------------------------------------
         # ML Classification (optional) — must run BEFORE
         # compute_statistics, so ML statistics get computed too.
+        # Wrapped in its own try/except so a missing model file
+        # only skips this step, not the whole engine.
         # ---------------------------------------------------------
 
         if satellite_product is not None and satellite_product.imagery.aoi is not None:
 
-            logger.info("Running ML land cover classification.")
+            try:
 
-            ml_classification, ml_metadata = build_ml_classification(
-                satellite_product.imagery.aoi,
-            )
+                logger.info("Running ML land cover classification.")
 
-            landcover_product["products"]["ml_classification"] = ml_classification
+                ml_classification, ml_metadata = build_ml_classification(
+                    satellite_product.imagery.aoi,
+                )
 
-            landcover_product["ml_metadata"] = ml_metadata
+                landcover_product["products"]["ml_classification"] = ml_classification
+
+                landcover_product["ml_metadata"] = ml_metadata
+
+            except FileNotFoundError:
+
+                logger.warning(
+                    "Land cover ML model not available in this "
+                    "deployment — showing WorldCover only."
+                )
+
+                landcover_product["ml_metadata"] = {
+                    "skipped": True,
+                    "reason": (
+                        "ML model not included in this deployment "
+                        "(large file size, ~1.4GB). Clone the full "
+                        "repo and run locally to enable this "
+                        "feature — see README."
+                    ),
+                }
 
         landcover_product = compute_statistics(
             landcover_product
