@@ -1,5 +1,3 @@
-
-
 # Earth Intelligence Platform
 
 An integrated GeoAI platform for Earth observation and environmental
@@ -15,35 +13,53 @@ geospatial analysis.
 
 ## Table of Contents
 
+- [Live Demo](#live-demo)
 - [Screenshots](#screenshots)
 - [Architecture](#architecture)
 - [Machine Learning Components](#machine-learning-components)
 - [Known Limitations](#known-limitations)
 - [Development History](#development-history)
 - [Setup](#setup)
+- [How to Use](#how-to-use)
+
+## Live Demo
+
+[**Try it live →**](YOUR_DEPLOYED_LINK_HERE)
+
+> **Note:** Free-tier hosting has limited memory. Smaller AOIs (e.g.
+> Mumbai) run reliably; very large metropolitan AOIs (e.g. Tokyo) may
+> be slow or hit resource limits — see [Known Limitations](#known-limitations).
+> For full performance, run locally (see [Setup](#setup)).
 
 ## Screenshots
 
 ### Home — Location Selection & AOI
 
-![Home page showing AOI map](assets/screenshots/home.png)
+![Home page showing AOI map](earth_intelligence_platform/assets/screenshots/home.png)
 
 ### Satellite Engine — Multi-Tile Acquisition
 
-![Satellite RGB composite](assets/screenshots/satellite_rgb.png)
+![Satellite RGB composite](earth_intelligence_platform/assets/screenshots/satellite.rgb.png)
 
 ### Terrain Engine — Slope Distribution
 
-![Terrain slope histogram and map](assets/screenshots/terrain_slope.png)
+![Terrain slope histogram and map](earth_intelligence_platform/assets/screenshots/terrain_slope.png)
 
-### Risk Engine — Multi-Hazard Assessment
+### Weather Engine — Climograph
 
-![Risk gauges and comparison chart](assets/screenshots/risk_gauges.png)
+![Weather Engine - Climograph](earth_intelligence_platform/assets/screenshots/weather.png)
 
 ### Land Cover — Classification with Legend
 
-![Land cover classification map](assets/screenshots/landcover_map.png)
+![Land cover classification map](earth_intelligence_platform/assets/screenshots/land_cover_engine.png)
 
+### Risk Engine — Multi-Hazard Assessment
+
+![Risk gauges and comparison chart](earth_intelligence_platform/assets/screenshots/risk.png)
+
+### Earth Intelligence Engine — Earth Intelligence Score
+
+![Earth Intelligence Score](earth_intelligence_platform/assets/screenshots/Earth_score.png)
 
 ## Architecture
 
@@ -184,6 +200,43 @@ python earth_intelligence_platform/models/train_cloud_classifier.py
 python earth_intelligence_platform/models/train_landcover_classifier.py
 python earth_intelligence_platform/models/train_wildfire_risk_classifier.py
 ```
+
+## How to Use
+
+1. **Home** — Enter a city and country (e.g. "Mumbai", "India"), click
+   **Analyze Area**. This runs the Location Engine and Data Discovery
+   Engine, resolving the city to a real administrative boundary and
+   building a dataset catalog.
+
+2. **Satellite** — Set a date range and maximum cloud cover threshold,
+   click **Run Satellite Engine**. Searches Sentinel-2 imagery,
+   selects the best-covering multi-tile acquisition, and produces RGB,
+   False Colour, and ML-detected cloud mask visualizations.
+
+3. **Terrain** — Click **Run Terrain Engine**. Downloads a Copernicus
+   DEM and derives elevation, slope, aspect, and hillshade.
+
+4. **Weather** — Set a historical date range, click **Run Weather
+   Engine**. Fetches hourly weather data and computes extremes, daily
+   trends, and a historical baseline comparison.
+
+5. **Land Cover** — Click **Run Land Cover Engine** (run Satellite
+   first to also get the date-specific ML classification alongside
+   the static ESA WorldCover baseline).
+
+6. **Risk** — Requires Terrain, Land Cover, Weather, and Satellite to
+   have all run first. Click **Run Risk Engine** for a 5-hazard
+   assessment (Flood, Landslide, Wildfire, Urban Heat, Wind), with a
+   learned ML comparison score for Wildfire specifically.
+
+7. **Earth Intelligence** — Requires all six engines above. Click
+   **Run Earth Intelligence Engine** for a single synthesized score
+   combining environmental quality, terrain stability, climate
+   conditions, hazard resilience, and sustainability.
+
+Each engine's page includes an **Advanced Information** and
+**Developer Debug** expander showing the full underlying data, for
+anyone wanting to inspect intermediate values.
 
 ## Tech Stack
 
