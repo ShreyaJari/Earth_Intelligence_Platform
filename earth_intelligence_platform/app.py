@@ -2,6 +2,14 @@ import streamlit as st
 from components.sidebar import render_sidebar_footer, render_sidebar_header
 from utils.config import APP_ICON, APP_NAME, VERSION
 from utils.styles import load_css
+import sys
+from pathlib import Path
+
+# Ensure the project root is on sys.path so
+# "earth_intelligence_platform.engines...." imports resolve
+# correctly regardless of how/where this script is invoked
+# (local `streamlit run`, Streamlit Cloud, etc.)
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 # ---------------------------------------------------------
 # Streamlit Configuration
