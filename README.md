@@ -4,10 +4,10 @@ An integrated GeoAI platform for Earth observation and environmental
 intelligence, built in Python with Streamlit, pystac-client, odc-stac,
 xarray, rioxarray, GeoPandas, and the Microsoft Planetary Computer.
 
-The platform combines eight modular engines — Location, Satellite,
-Terrain, Weather, Land Cover, Risk, and Earth Intelligence — into a
+The platform combines eight modular engines - Location, Satellite,
+Terrain, Weather, Land Cover, Risk, and Earth Intelligence engine into a
 single pipeline that takes a place name and produces an integrated
-environmental risk assessment, with three custom-trained machine
+environmental risk assessment, with three custom trained machine
 learning models woven into the pipeline alongside deterministic
 geospatial analysis.
 
@@ -24,9 +24,9 @@ geospatial analysis.
 
 ## Live Demo
 
-[**Try it live →**](YOUR_DEPLOYED_LINK_HERE)
+[**Try it live →**](https://earthintelligenceplatform-upeeswbrd44n7xgbtcwazt.streamlit.app/)
 
-> **Note:** Free-tier hosting has limited memory. Smaller AOIs (e.g.
+> **Note:** Free tier hosting has limited memory. Smaller AOIs (e.g.
 > Mumbai) run reliably; very large metropolitan AOIs (e.g. Tokyo) may
 > be slow or hit resource limits — see [Known Limitations](#known-limitations).
 > For full performance, run locally (see [Setup](#setup)).
@@ -80,7 +80,6 @@ flowchart TD
     F1((ML: Land Cover Refinement)) -.-> F
     G1((ML: Wildfire Calibration)) -.-> G
 ```
-
 Each engine returns a standardized product object, cached in Streamlit
 session state, so downstream engines and pages can consume upstream
 results without recomputation.
@@ -90,21 +89,21 @@ results without recomputation.
 The Satellite Engine's original design selected a single Sentinel-2
 STAC item per request. For AOIs spanning multiple MGRS tiles (which
 includes most real cities), this silently produced imagery that was
-~99.85% NaN outside a single tile's footprint — a black-looking image
+~99.85% NaN outside a single tile's footprint, a black looking image
 that ran without errors.
 
 The fix reframes tile selection around **acquisitions**: groups of
-same-date STAC items whose combined footprint is evaluated against the
+same date STAC items whose combined footprint is evaluated against the
 AOI as a whole. `group_acquisitions.py` computes real geometric
-coverage percentage and a coverage-weighted cloud score per
+coverage percentage and a coverage weighted cloud score per
 acquisition; `select_acquisition.py` enforces a minimum coverage gate
 before proceeding; `load_imagery.py` mosaics every tile belonging to
 the selected acquisition via `odc.stac.load(groupby="solar_day")`.
 
 ## Machine Learning Components
 
-Three components are genuinely trained models, not hand-tuned
-heuristics — each is disclosed honestly, including known weaknesses.
+Three components are genuinely trained models, not hand tuned
+heuristics, each is disclosed honestly, including known weaknesses.
 
 | Component | Method | Training Data | Validation |
 |---|---|---|---|
@@ -113,7 +112,7 @@ heuristics — each is disclosed honestly, including known weaknesses.
 | **Wildfire Risk Calibration** | Random Forest on weather + vegetation covariates | Real NASA FIRMS fire detections vs. sampled background points, 5 countries | 82% accuracy, 0.81 macro F1 (pilot scale, ~830 points) |
 
 The other four hazards (Flood, Landslide, Urban Heat, Wind Exposure)
-use deterministic, hand-weighted formulas — disclosed as such, not
+use deterministic, hand weighted formulas, disclosed as such, not
 presented as learned models.
 
 ### Case study: diagnosing and fixing a real model failure
