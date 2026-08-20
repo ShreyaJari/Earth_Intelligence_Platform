@@ -6,6 +6,11 @@ Satellite Page
 Runs the Satellite Engine and displays the results.
 """
 
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+
 from datetime import date
 
 import numpy as np
