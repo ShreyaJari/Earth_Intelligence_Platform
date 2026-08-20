@@ -6,6 +6,11 @@ Terrain Page
 Runs the Terrain Engine and displays the results.
 """
 
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+
 import matplotlib.pyplot as plt
 import numpy as np
 import plotly.express as px

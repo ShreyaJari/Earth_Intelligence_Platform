@@ -9,6 +9,11 @@ Land Cover, Weather, and Risk outputs — and displays the
 results.
 """
 
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+
 import plotly.graph_objects as go
 import streamlit as st
 from components.cards import metric_card
@@ -36,6 +41,7 @@ def build_score_gauge(score, title, bar_color="#2D6A4F"):
     """
 
     fig = go.Figure(
+
         go.Indicator(
             mode="gauge+number",
             value=score,
