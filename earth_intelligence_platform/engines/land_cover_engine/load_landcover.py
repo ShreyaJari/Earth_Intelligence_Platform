@@ -97,6 +97,9 @@ def load_landcover(
 
         classification = classification.isel(time=-1)
 
+        if "time" in classification.coords:
+            classification = classification.reset_coords("time", drop=True)
+
     # ---------------------------------------------------------
     # geopolygon= above only sets the RECTANGULAR bounding
     # extent — it does not mask pixels outside the actual AOI
