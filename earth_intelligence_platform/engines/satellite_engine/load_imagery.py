@@ -16,7 +16,7 @@ from earth_intelligence_platform.engines.satellite_engine.satellite_product impo
 # Load Imagery
 # ============================================================
 
-MAX_PIXELS = 25_000_000  # deploy-only safety cap for free-tier memory limits
+MAX_PIXELS = 10_000_000  # deploy-only safety cap for free-tier memory limits
 
 
 def load_imagery(
