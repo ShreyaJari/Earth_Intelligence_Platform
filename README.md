@@ -41,13 +41,14 @@ geospatial analysis.
 
 [**Try it live →**](https://earthintelligenceplatform-upeeswbrd44n7xgbtcwazt.streamlit.app/)
 
-> **Note:** Free-tier hosting has limited memory. Smaller AOIs (e.g.
+> **Note:** Free-tier hosting has limited memory (~1GB RAM). Smaller AOIs (e.g.
 > Mumbai) run reliably; very large metropolitan AOIs (e.g. Tokyo) may
 > be slow or hit resource limits. The Land Cover ML classification
 > model (~1.4GB) is excluded from this deployment for the same reason
 > — WorldCover still works fully; the ML comparison layer is available
 > when running locally. See [Known Limitations](#known-limitations)
 > and [Setup](#setup) for the complete experience.
+>
 
 ## Screenshots
 
