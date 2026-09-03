@@ -338,7 +338,7 @@ st.caption("Daily mean temperature and total precipitation together.")
 
 climo_df = weather_dataframe.copy()
 
-climo_df["date"] = pd.to_datetime(climo_df["time"]).dt.date
+climo_df["date"] = pd.to_datetime(climo_df["time"]).dt.normalize()
 
 daily_climo = (
     climo_df.groupby("date")
@@ -407,7 +407,7 @@ heatmap_df = weather_dataframe.copy()
 
 heatmap_df["time"] = pd.to_datetime(heatmap_df["time"])
 
-heatmap_df["date"] = heatmap_df["time"].dt.date
+heatmap_df["date"] = heatmap_df["time"].dt.normalize()
 
 heatmap_df["hour"] = heatmap_df["time"].dt.hour
 
@@ -659,7 +659,7 @@ st.subheader("Daily Temperature Range")
 
 daily_df = chart_data.reset_index()
 
-daily_df["date"] = daily_df["time"].dt.date
+daily_df["date"] = daily_df["time"].dt.normalize()
 
 daily_summary = (
     daily_df.groupby("date")["temperature"].agg(["min", "mean", "max"]).reset_index()
