@@ -41,7 +41,6 @@ def build_score_gauge(score, title, bar_color="#2D6A4F"):
     """
 
     fig = go.Figure(
-
         go.Indicator(
             mode="gauge+number",
             value=score,
@@ -334,6 +333,8 @@ if not product["success"]:
     st.stop()
 
 st.success("Earth Intelligence Engine completed successfully.")
+
+st.info("🎉 You've completed the full Earth Intelligence Platform pipeline!")
 
 st.divider()
 
@@ -679,41 +680,3 @@ with col2:
         "Statistics Time",
         f"{processing.get('statistics_time_seconds', 0):.2f} s",
     )
-
-st.divider()
-
-# ============================================================
-# Advanced
-# ============================================================
-
-with st.expander("Advanced Information"):
-
-    st.write("### Intelligence")
-
-    st.write(product["intelligence"])
-
-    st.write("### Statistics")
-
-    st.write(product["statistics"])
-
-    st.write("### Processing")
-
-    st.write(product["processing"])
-
-st.divider()
-
-# ============================================================
-# Developer Information
-# ============================================================
-
-with st.expander("Developer Debug"):
-
-    st.write("Earth Intelligence Product Keys")
-
-    st.write(list(product.keys()))
-
-    st.write()
-
-    st.write("Full Earth Intelligence Product")
-
-    st.write(product)

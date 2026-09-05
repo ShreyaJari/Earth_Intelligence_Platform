@@ -23,6 +23,21 @@ from .select_acquisition import select_acquisition
 from .validation import validate_request
 
 # ============================================================
+# Deployment Mode
+#
+# When True, skips generating False Colour, Cloud Mask, and
+# the SWIR bands (B11/B12) — reduces peak memory usage for
+# free-tier hosting. Set to False on the "main" branch for the
+# full local experience; True on "deploy".
+# ============================================================
+
+DEPLOY_LITE = True
+
+DEFAULT_BANDS = ["B02", "B03", "B04", "B08"]
+
+FULL_BANDS = ["B02", "B03", "B04", "B08", "B11", "B12"]
+
+# ============================================================
 # Run Satellite Engine
 # ============================================================
 
@@ -55,6 +70,9 @@ def run_satellite_engine(
     resolution : float
 
     bands : list[str], optional
+        If not provided, defaults to DEFAULT_BANDS (4 bands)
+        when DEPLOY_LITE is True, or FULL_BANDS (6 bands,
+        including SWIR) otherwise.
 
     Returns
     -------
@@ -125,6 +143,10 @@ def run_satellite_engine(
     # Load Imagery
     # ---------------------------------------------------------
 
+    if bands is None:
+
+        bands = DEFAULT_BANDS if DEPLOY_LITE else FULL_BANDS
+
     imagery = load_imagery(
         scene,
         grid,
@@ -145,14 +167,22 @@ def run_satellite_engine(
     product.imagery.aoi = prepared
 
     # ---------------------------------------------------------
-    # Cloud Mask  (NEW)
+    # Cloud Mask
     # ---------------------------------------------------------
 
-    cloud_mask, ml_cloud_percentage = build_cloud_mask(
-        prepared,
-    )
+    if DEPLOY_LITE:
 
-    product.cloud_mask = cloud_mask
+        product.cloud_mask = None
+
+        ml_cloud_percentage = None
+
+    else:
+
+        cloud_mask, ml_cloud_percentage = build_cloud_mask(
+            prepared,
+        )
+
+        product.cloud_mask = cloud_mask
 
     # ---------------------------------------------------------
     # Build Visualizations
@@ -162,9 +192,15 @@ def run_satellite_engine(
         prepared,
     )
 
-    product.visualizations.false_colour = build_false_colour(
-        prepared,
-    )
+    if DEPLOY_LITE:
+
+        product.visualizations.false_colour = None
+
+    else:
+
+        product.visualizations.false_colour = build_false_colour(
+            prepared,
+        )
 
     # ---------------------------------------------------------
     # Metadata
@@ -182,8 +218,9 @@ def run_satellite_engine(
     product.quality = compute_quality(
         prepared,
         scene,
-        ml_cloud_percentage=ml_cloud_percentage,  # NEW argument
+        ml_cloud_percentage=ml_cloud_percentage,
     )
+
     # ---------------------------------------------------------
     # Return Product
     # ---------------------------------------------------------

@@ -118,6 +118,8 @@ if not product["success"]:
 
 st.success("Weather Engine completed successfully.")
 
+st.info("➡️ Next: head to **Land Cover** in the sidebar to continue.")
+
 st.divider()
 
 # ============================================================
@@ -476,35 +478,18 @@ with col3:
 
 st.write("**Precipitation**")
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3 = st.columns(3)
 
 with col1:
-
-    metric_card(
-        "Minimum",
-        f"{statistics['precipitation']['minimum']:.2f} mm",
-    )
+    metric_card("Minimum", f"{statistics['precipitation']['minimum']:.2f} mm")
 
 with col2:
-
-    metric_card(
-        "Maximum",
-        f"{statistics['precipitation']['maximum']:.2f} mm",
-    )
+    metric_card("Maximum", f"{statistics['precipitation']['maximum']:.2f} mm")
 
 with col3:
+    metric_card("Mean", f"{statistics['precipitation']['mean']:.2f} mm")
 
-    metric_card(
-        "Mean",
-        f"{statistics['precipitation']['mean']:.2f} mm",
-    )
-
-with col4:
-
-    metric_card(
-        "Total",
-        f"{statistics['precipitation']['total']:.2f} mm",
-    )
+metric_card("Total Precipitation", f"{statistics['precipitation']['total']:.2f} mm")
 
 st.write("**Wind Speed**")
 
@@ -530,13 +515,6 @@ with col3:
         "Mean",
         f"{statistics['wind_speed']['mean']:.1f} km/h",
     )
-
-st.write("**Wind Direction**")
-
-metric_card(
-    "Dominant Direction",
-    f"{statistics['wind_direction']['dominant']}°",
-)
 
 st.write("**Humidity**")
 
@@ -587,8 +565,6 @@ with col3:
         "Mean",
         f"{statistics['pressure']['mean']:.1f} hPa",
     )
-
-st.divider()
 
 st.divider()
 
@@ -773,13 +749,6 @@ with col1:
         processing["engine"],
     )
 
-with col2:
-
-    metric_card(
-        "Created",
-        processing["created"],
-    )
-
 col1, col2, col3 = st.columns(3)
 
 with col1:
@@ -802,45 +771,3 @@ with col3:
         "Statistics Time",
         f"{processing.get('statistics_time_seconds', 0):.2f} s",
     )
-
-st.divider()
-
-# ============================================================
-# Advanced
-# ============================================================
-
-with st.expander("Advanced Information"):
-
-    st.write("### Dataset")
-
-    st.write(product["dataset"])
-
-    st.write("### Metadata")
-
-    st.write(product["metadata"])
-
-    st.write("### Statistics")
-
-    st.write(product["statistics"])
-
-    st.write("### Processing")
-
-    st.write(product["processing"])
-
-st.divider()
-
-# ============================================================
-# Developer Information
-# ============================================================
-
-with st.expander("Developer Debug"):
-
-    st.write("Weather Product Keys")
-
-    st.write(list(product.keys()))
-
-    st.write()
-
-    st.write("Products (raw)")
-
-    st.write(product["products"])

@@ -270,6 +270,8 @@ if not product["success"]:
 
 st.success("Risk Engine completed successfully.")
 
+st.info("➡️ Next: head to **Earth Intelligence** in the sidebar to continue.")
+
 st.divider()
 
 # ============================================================
@@ -499,13 +501,6 @@ with col1:
         processing["engine"],
     )
 
-with col2:
-
-    metric_card(
-        "Created",
-        processing["created"],
-    )
-
 col1, col2 = st.columns(2)
 
 with col1:
@@ -521,41 +516,3 @@ with col2:
         "Statistics Time",
         f"{processing.get('statistics_time_seconds', 0):.2f} s",
     )
-
-st.divider()
-
-# ============================================================
-# Advanced
-# ============================================================
-
-with st.expander("Advanced Information"):
-
-    st.write("### Products")
-
-    st.write(product["products"])
-
-    st.write("### Statistics")
-
-    st.write(product["statistics"])
-
-    st.write("### Processing")
-
-    st.write(product["processing"])
-
-st.divider()
-
-# ============================================================
-# Developer Information
-# ============================================================
-
-with st.expander("Developer Debug"):
-
-    st.write("Risk Product Keys")
-
-    st.write(list(product.keys()))
-
-    st.write()
-
-    st.write("Full Risk Product")
-
-    st.write(product)

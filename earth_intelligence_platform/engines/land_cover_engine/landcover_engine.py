@@ -4,6 +4,10 @@ landcover_engine.py
 Main orchestration for the Land Cover Engine.
 """
 
+from earth_intelligence_platform.engines.satellite_engine.main import (
+    DEPLOY_LITE,
+)
+
 from .compute_statistics import compute_statistics
 from .landcover_product import create_landcover_product
 from .load_landcover import load_landcover
@@ -41,9 +45,9 @@ def landcover_engine(
         If provided (Satellite Engine already run for this
         AOI), also attempts a date-specific ML land cover
         classification alongside the static WorldCover result.
-        If the ML model file isn't available (e.g. excluded
-        from a lightweight deployment), this is skipped
-        gracefully — WorldCover still succeeds.
+        Skipped entirely when DEPLOY_LITE is on (requires SWIR
+        bands not loaded on lightweight deployments), or if the
+        ML model file isn't available for any other reason.
     """
 
     logger.info("Starting Land Cover Engine.")
@@ -81,11 +85,34 @@ def landcover_engine(
         # ---------------------------------------------------------
         # ML Classification (optional) — must run BEFORE
         # compute_statistics, so ML statistics get computed too.
-        # Wrapped in its own try/except so a missing model file
-        # only skips this step, not the whole engine.
+        #
+        # On DEPLOY_LITE deployments, this is skipped entirely
+        # and directly — Satellite Engine doesn't load SWIR
+        # bands (B11/B12) there, so the ML classifier's
+        # requirements can never be met regardless of whether
+        # the model file happens to exist locally.
         # ---------------------------------------------------------
 
-        if satellite_product is not None and satellite_product.imagery.aoi is not None:
+        if DEPLOY_LITE:
+
+            logger.info(
+                "Skipping ML land cover classification — "
+                "disabled on this deployment (requires SWIR "
+                "bands not loaded when DEPLOY_LITE is on)."
+            )
+
+            landcover_product["ml_metadata"] = {
+                "skipped": True,
+                "reason": (
+                    "ML land cover classification is not "
+                    "available on this deployment. See the "
+                    "README's 'Demo vs. Full Local Version' "
+                    "section, or clone the repository and run "
+                    "locally for the complete feature set."
+                ),
+            }
+
+        elif satellite_product is not None and satellite_product.imagery.aoi is not None:
 
             try:
 
@@ -109,10 +136,10 @@ def landcover_engine(
                 landcover_product["ml_metadata"] = {
                     "skipped": True,
                     "reason": (
-                        "ML model not included in this deployment "
-                        "(large file size, ~1.4GB). Clone the full "
-                        "repo and run locally to enable this "
-                        "feature — see README."
+                        "ML model not included in this "
+                        "deployment (large file size, ~1.4GB). "
+                        "Clone the full repo and run locally to "
+                        "enable this feature — see README."
                     ),
                 }
 

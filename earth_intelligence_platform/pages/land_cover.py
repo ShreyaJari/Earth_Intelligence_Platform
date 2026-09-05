@@ -115,6 +115,8 @@ st.success(
     "Land Cover Engine completed successfully."
 )
 
+st.info("➡️ Next: head to **Risk** in the sidebar to continue.")
+
 st.divider()
 
 # ============================================================
@@ -409,8 +411,11 @@ if product["products"].get("ml_classification") is not None:
 else:
 
     st.info(
-        "ML land cover not available — run the Satellite "
-        "Engine first, then re-run Land Cover."
+        "🔒 ML Land Cover Classification is available in the "
+        "full local version. This deployment is optimized for "
+        "reliability on free-tier hosting — see the README's "
+        "'Demo vs. Full Local Version' section, or clone the "
+        "repo to run the complete feature set."
     )
 
     st.divider()
@@ -454,13 +459,6 @@ with col3:
         metadata.get("crs", "N/A"),
     )
 
-st.json(
-    {
-        "bounds": metadata.get("bounds"),
-        "resolution": metadata.get("resolution"),
-    }
-)
-
 st.divider()
 
 # ============================================================
@@ -478,13 +476,6 @@ with col1:
     metric_card(
         "Engine",
         processing["engine"],
-    )
-
-with col2:
-
-    metric_card(
-        "Created",
-        processing["created"],
     )
 
 col1, col2, col3 = st.columns(3)
@@ -509,55 +500,3 @@ with col3:
         "Statistics Time",
         f"{processing.get('statistics_time_seconds', 0):.2f} s",
     )
-
-st.divider()
-
-# ============================================================
-# Advanced
-# ============================================================
-
-with st.expander(
-    "Advanced Information"
-):
-
-    st.write("### Dataset")
-
-    st.write(product["dataset"])
-
-    st.write("### Metadata")
-
-    st.write(product["metadata"])
-
-    st.write("### Statistics")
-
-    st.write(product["statistics"])
-
-    if product.get("ml_statistics"):
-
-        st.write("### ML Statistics")
-
-        st.write(product["ml_statistics"])
-
-    st.write("### Processing")
-
-    st.write(product["processing"])
-
-st.divider()
-
-# ============================================================
-# Developer Information
-# ============================================================
-
-with st.expander(
-    "Developer Debug"
-):
-
-    st.write("Land Cover Product Keys")
-
-    st.write(list(product.keys()))
-
-    st.write()
-
-    st.write("Masks (raw)")
-
-    st.write(product["products"]["masks"])

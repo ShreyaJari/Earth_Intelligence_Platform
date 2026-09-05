@@ -29,7 +29,10 @@ st.set_page_config(
 
 load_css()
 
-# ... rest of the file continues unchanged from here
+st.markdown(
+    "<div class='watermark-fixed'>Built by Shreya Jariwala</div>",
+    unsafe_allow_html=True,
+)
 
 # ---------------------------------------------------------
 # Session State

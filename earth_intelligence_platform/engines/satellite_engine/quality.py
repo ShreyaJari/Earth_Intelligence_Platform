@@ -21,7 +21,7 @@ from earth_intelligence_platform.engines.satellite_engine.satellite_product impo
 def compute_quality(
     imagery,
     scene,
-    ml_cloud_percentage=0.0,  # NEW parameter
+    ml_cloud_percentage=0.0,
 ):
     """
     Compute quality metrics for imagery.
@@ -32,8 +32,10 @@ def compute_quality(
 
     scene : Scene
 
-    ml_cloud_percentage : float
+    ml_cloud_percentage : float or None
         AOI-specific cloud percentage from the ML cloud mask.
+        None if the ML cloud mask was skipped (e.g. on a
+        lightweight deployment).
 
     Returns
     -------
@@ -64,7 +66,7 @@ def compute_quality(
 
     quality.cloud_cover = scene.cloud_cover
 
-    quality.ml_cloud_percentage = ml_cloud_percentage  # NEW
+    quality.ml_cloud_percentage = ml_cloud_percentage
 
     print()
 
@@ -98,11 +100,20 @@ def compute_quality(
         "%",
     )
 
-    print(
-        "Cloud Cover (ML, AOI-measured):",
-        quality.ml_cloud_percentage,
-        "%",
-    )
+    if quality.ml_cloud_percentage is not None:
+
+        print(
+            "Cloud Cover (ML, AOI-measured):",
+            quality.ml_cloud_percentage,
+            "%",
+        )
+
+    else:
+
+        print(
+            "Cloud Cover (ML, AOI-measured): N/A "
+            "(ML cloud detection disabled on this deployment)"
+        )
 
     print("=============================\n")
 

@@ -145,6 +145,8 @@ if not product["success"]:
 
 st.success("Terrain Engine completed successfully.")
 
+st.info("➡️ Next: head to **Weather** in the sidebar to continue.")
+
 st.divider()
 
 # ============================================================
@@ -369,8 +371,6 @@ with col3:
         metadata.get("crs", "N/A"),
     )
 
-st.json(metadata.get("resolution", {}))
-
 st.divider()
 
 # ============================================================
@@ -403,51 +403,3 @@ with col3:
         "Statistics Time",
         f"{processing.get('statistics_time_seconds', 0):.2f} s",
     )
-
-st.divider()
-
-# ============================================================
-# Advanced
-# ============================================================
-
-with st.expander("Advanced Information"):
-
-    st.write("### Dataset")
-
-    st.write(product["dataset"])
-
-    st.write("### Metadata")
-
-    st.write(product["metadata"])
-
-    st.write("### Statistics")
-
-    st.write(product["statistics"])
-
-    st.write("### Processing")
-
-    st.write(product["processing"])
-
-st.divider()
-
-# ============================================================
-# Developer Information
-# ============================================================
-
-with st.expander("Developer Debug"):
-
-    st.write("Terrain Product Keys")
-
-    st.write(list(product.keys()))
-
-    st.write()
-
-    st.write("Raw DEM")
-
-    st.write(product["dem"])
-
-    st.write()
-
-    st.write("Terrain Products (raw)")
-
-    st.write(product["products"])

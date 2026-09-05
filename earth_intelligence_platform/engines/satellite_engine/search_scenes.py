@@ -112,7 +112,15 @@ def search_scenes(
 
     if len(items) == 0:
 
-        raise RuntimeError("No satellite scenes found.")
+        raise RuntimeError(
+            f"No satellite scenes found matching "
+            f"{request.max_cloud_cover}% max cloud cover for "
+            f"this date range. This is often caused by "
+            f"persistently cloudy conditions (e.g. monsoon "
+            f"season) rather than a genuine lack of imagery — "
+            f"try raising the cloud cover threshold or "
+            f"selecting a different date range."
+        )
 
     print(f"\n✓ Found {len(items)} candidate scene(s).")
 
@@ -149,3 +157,79 @@ def search_scenes(
     print("----------------------------\n")
 
     return inventory
+
+
+# ============================================================
+# Count Available Scenes (lightweight preview check)
+# ============================================================
+
+
+def count_available_scenes(
+    aoi,
+    collection="sentinel-2-l2a",
+    start_date=None,
+    end_date=None,
+    max_cloud_cover=40,
+):
+    """
+    Quick count of how many scenes match the given search
+    parameters, without building the full inventory DataFrame.
+    Used by the UI to warn upfront if a cloud cover / date
+    combination would find nothing, before the person commits
+    to a full run.
+
+    Parameters
+    ----------
+    aoi : dict
+
+    collection : str
+
+    start_date : str, optional
+
+    end_date : str, optional
+
+    max_cloud_cover : float
+
+    Returns
+    -------
+    int
+    """
+
+    geometry = aoi["geometry"]["geometry"]
+
+    catalog = Client.open(
+        STAC_URL,
+        ignore_conformance=True,
+    )
+
+    if start_date and end_date:
+
+        datetime_range = f"{start_date}/{end_date}"
+
+    elif start_date:
+
+        datetime_range = f"{start_date}/.."
+
+    elif end_date:
+
+        datetime_range = f"../{end_date}"
+
+    else:
+
+        datetime_range = None
+
+    search = catalog.search(
+        collections=[collection],
+        intersects=geometry.__geo_interface__,
+        datetime=datetime_range,
+        query={
+            "eo:cloud_cover": {
+                "lte": max_cloud_cover,
+            }
+        },
+        max_items=1,
+    )
+
+    items = list(search.items())
+
+    return len(items)

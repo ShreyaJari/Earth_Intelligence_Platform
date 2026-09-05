@@ -11,7 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
-from datetime import date
+from datetime import date, timedelta
 
 import numpy as np
 import plotly.express as px
@@ -19,6 +19,10 @@ import streamlit as st
 
 from earth_intelligence_platform.engines.satellite_engine.main import (
     run_satellite_engine,
+)
+
+from earth_intelligence_platform.engines.satellite_engine.search_scenes import (
+    count_available_scenes,
 )
 
 # ============================================================
@@ -113,10 +117,43 @@ with col2:
 
     st.caption(
         "Filters candidate tiles by their whole-scene cloud "
-        "cover, not cloud cover specifically over your AOI. "
-        "A tile can be excluded here even if it's clear "
-        "directly over your area of interest."
+        "cover. Lower values are stricter and may find no "
+        "matches during persistently cloudy periods (e.g. "
+        "monsoon season) — if you get no results, try raising "
+        "this threshold."
     )
+
+# ============================================================
+# Availability Preview
+# ============================================================
+
+with st.spinner("Checking imagery availability..."):
+
+    preview_count = count_available_scenes(
+        aoi=st.session_state["aoi"],
+        start_date=(str(start_date) if start_date else None),
+        max_cloud_cover=max_cloud_cover,
+    )
+
+if preview_count == 0:
+
+    st.warning(
+        f"⚠️ No scenes currently match a {max_cloud_cover}% "
+        "cloud cover threshold for this date range. This is "
+        "often caused by persistently cloudy conditions rather "
+        "than a lack of imagery — try raising the cloud cover "
+        "threshold above, or picking an earlier start date."
+    )
+
+else:
+
+    st.caption(f"✅ Matching imagery found for this configuration.")
+
+st.caption(
+    "⏱️ Running this engine may take 2-3 minutes while it "
+    "searches, ranks, and downloads satellite imagery for "
+    "your Area of Interest."
+)
 
 st.divider()
 
@@ -131,18 +168,30 @@ if st.button(
 
     with st.spinner("Searching and downloading satellite imagery..."):
 
-        product = run_satellite_engine(
-            aoi=st.session_state["aoi"],
-            collection="sentinel-2-l2a",
-            start_date=(str(start_date) if start_date else None),
-            end_date=None,
-            max_cloud_cover=max_cloud_cover,
-            resolution=10,
-        )
+        try:
 
-        st.session_state["satellite"] = product
+            product = run_satellite_engine(
+                aoi=st.session_state["aoi"],
+                collection="sentinel-2-l2a",
+                start_date=(str(start_date) if start_date else None),
+                end_date=None,
+                max_cloud_cover=max_cloud_cover,
+                resolution=10,
+            )
 
-        st.session_state["pipeline_status"]["satellite"] = True
+            st.session_state["satellite"] = product
+
+            st.session_state["pipeline_status"]["satellite"] = True
+
+        except RuntimeError as e:
+
+            st.error(
+                f"⚠️ {e}\n\n"
+                "Try raising the cloud cover threshold or picking "
+                "a different date — this happens when the best "
+                "available date doesn't have enough tile coverage "
+                "for your Area of Interest."
+            )
 
 # ============================================================
 # Display Results
@@ -155,6 +204,8 @@ if st.session_state.get("satellite") is None:
 product = st.session_state["satellite"]
 
 st.success("Satellite Engine completed successfully.")
+
+st.info("➡️ Next: head to **Terrain** in the sidebar to continue.")
 
 st.divider()
 
@@ -174,20 +225,12 @@ with col1:
     )
 
 with col2:
-
     st.metric(
-        "Collection",
-        product.scene.collection,
+        "Provider",
+        "Planetary Computer",
     )
 
 with col3:
-
-    st.metric(
-        "Provider",
-        product.scene.provider,
-    )
-
-with col4:
 
     st.metric(
         "Acquisition",
@@ -230,7 +273,13 @@ if product.visualizations.false_colour is not None:
 
 else:
 
-    st.warning("False colour image not available.")
+    st.info(
+        "🔒 False Colour Composite is available in the full "
+        "local version. This deployment is optimized for "
+        "reliability on free-tier hosting — see the README's "
+        "'Demo vs. Full Local Version' section, or clone the "
+        "repo to run the complete feature set."
+    )
 
 st.divider()
 
@@ -265,10 +314,19 @@ with col3:
 
 with col4:
 
-    st.metric(
-        "AOI Cloud % (ML, measured)",
-        f"{product.quality.ml_cloud_percentage:.2f}%",
-    )
+    if product.quality.ml_cloud_percentage is not None:
+
+        st.metric(
+            "AOI Cloud % (ML, measured)",
+            f"{product.quality.ml_cloud_percentage:.2f}%",
+        )
+
+    else:
+
+        st.metric(
+            "AOI Cloud % (ML, measured)",
+            "N/A",
+        )
 
 st.caption(
     '"Scene Cloud (Metadata)" is Sentinel-2\'s own whole-tile '
@@ -294,7 +352,13 @@ if product.cloud_mask is not None:
 
 else:
 
-    st.warning("Cloud mask not available.")
+    st.info(
+        "🔒 ML Cloud Detection is available in the full local "
+        "version. See the README's 'Demo vs. Full Local "
+        "Version' section for details."
+    )
+
+st.divider()
 
 # ============================================================
 # Metadata
@@ -321,100 +385,3 @@ with col2:
 with st.expander("Loaded Bands"):
 
     st.write(product.metadata.bands)
-
-st.divider()
-
-# ============================================================
-# Spatial Grid
-# ============================================================
-
-st.subheader("Spatial Grid")
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-
-    st.metric(
-        "Width",
-        product.grid.width,
-    )
-
-with col2:
-
-    st.metric(
-        "Height",
-        product.grid.height,
-    )
-
-with col3:
-
-    st.metric(
-        "Resolution",
-        f"{product.grid.resolution} m",
-    )
-
-st.json(product.grid.bounds)
-
-st.divider()
-
-# ============================================================
-# Advanced
-# ============================================================
-
-with st.expander("Advanced Information"):
-
-    st.write("### Request")
-
-    st.write(product.request)
-
-    st.write("### Scene")
-
-    st.write(product.scene)
-
-    st.write("### Grid")
-
-    st.write(product.grid)
-
-    st.write("### Metadata")
-
-    st.write(product.metadata)
-
-    st.write("### Quality")
-
-    st.write(product.quality)
-
-st.divider()
-
-# ============================================================
-# Developer Information
-# ============================================================
-
-with st.expander("Developer Debug"):
-
-    st.write("Satellite Product")
-
-    st.write(product)
-
-    st.write()
-
-    st.write("Raw Imagery (summary — full dataset too large to render)")
-
-    st.write(
-        {
-            "dimensions": dict(product.imagery.raw.sizes),
-            "data_variables": list(product.imagery.raw.data_vars),
-            "crs": str(product.imagery.raw.rio.crs),
-        }
-    )
-
-    st.write()
-
-    st.write("Prepared AOI Imagery (summary — full dataset too large to render)")
-
-    st.write(
-        {
-            "dimensions": dict(product.imagery.aoi.sizes),
-            "data_variables": list(product.imagery.aoi.data_vars),
-            "crs": str(product.imagery.aoi.rio.crs),
-        }
-    )
