@@ -7,6 +7,7 @@ Downloads and clips land cover data.
 import time
 
 import geopandas as gpd
+import numpy as np
 import odc.stac
 import planetary_computer
 import rioxarray
@@ -14,6 +15,18 @@ from pystac_client import Client
 from shapely.geometry import mapping
 
 STAC_URL = "https://planetarycomputer.microsoft.com/api/stac/v1"
+
+# ---------------------------------------------------------
+# Memory safety: cap the classification raster's pixel count
+# after clipping, so large AOIs (e.g. Paris, Dubai — which
+# resolve to larger administrative boundaries than their city
+# core) don't hold an oversized WorldCover array in session
+# state on memory-constrained deployments. WorldCover's native
+# ~10m resolution means even moderately large AOIs can produce
+# tens of millions of pixels.
+# ---------------------------------------------------------
+
+MAX_PIXELS = 6_000_000
 
 
 def load_landcover(
@@ -120,6 +133,45 @@ def load_landcover(
     )
 
     print("After clip:", dict(classification.sizes))
+
+    # ---------------------------------------------------------
+    # Memory safety downsample — check pixel count AFTER
+    # clipping (the true final size), and coarsen if needed.
+    # ---------------------------------------------------------
+
+    y_dim = "y" if "y" in classification.dims else "latitude"
+
+    x_dim = "x" if "x" in classification.dims else "longitude"
+
+    total_pixels = classification.sizes[y_dim] * classification.sizes[x_dim]
+
+    if total_pixels > MAX_PIXELS:
+
+        downsample_factor = int(np.ceil((total_pixels / MAX_PIXELS) ** 0.5))
+
+        print(
+            f"Large classification raster ({total_pixels:,} px) — "
+            f"downsampling {downsample_factor}x for memory safety "
+            "on this deployment."
+        )
+
+        original_crs = classification.rio.crs
+
+        # WorldCover is categorical data — use nearest-neighbor
+        # (mode-like) coarsening via isel striding, NOT .mean(),
+        # since averaging land cover class codes produces
+        # meaningless intermediate values.
+
+        classification = classification.isel(
+            {
+                y_dim: slice(None, None, downsample_factor),
+                x_dim: slice(None, None, downsample_factor),
+            }
+        )
+
+        classification = classification.rio.write_crs(original_crs)
+
+        print("After downsample:", dict(classification.sizes))
 
     print("======================================\n")
 
