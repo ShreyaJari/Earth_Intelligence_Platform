@@ -31,7 +31,7 @@ from .validation import validate_request
 # full local experience; True on "deploy".
 # ============================================================
 
-DEPLOY_LITE = True
+DEPLOY_LITE = False
 
 DEFAULT_BANDS = ["B02", "B03", "B04", "B08"]
 
