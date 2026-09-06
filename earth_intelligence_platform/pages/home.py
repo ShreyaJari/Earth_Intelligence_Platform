@@ -21,6 +21,12 @@ st.caption(
     "An integrated GeoAI platform for Earth Observation and Environmental Intelligence."
 )
 
+st.info(
+    "ℹ️ **Demo note:** This live demo runs on free-tier hosting "
+    "with limited memory. It reliably supports running the full "
+    "pipeline for **up to 2 cities per session**."
+)
+
 st.divider()
 
 # ---------------------------------------------------------
