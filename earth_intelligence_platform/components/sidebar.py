@@ -7,6 +7,9 @@ def render_sidebar_header():
     Render the sidebar branding header.
     """
     st.title(APP_NAME)
+
+    st.caption("Built by Shreya Jariwala")
+
     st.markdown("---")
     st.markdown("""
         **Earth Intelligence Platform**
@@ -14,7 +17,6 @@ def render_sidebar_header():
         environmental intelligence products.
         """)
     st.markdown("---")
-
 
 def render_sidebar_footer():
     """
