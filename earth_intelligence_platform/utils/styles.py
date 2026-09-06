@@ -100,7 +100,7 @@ def load_css():
             .watermark-fixed {
             position: fixed;
             bottom: 10px;
-            right: 14px;
+            left: 14px;
             color: #6c757d;
             font-size: 0.85rem;
             font-weight: 600;

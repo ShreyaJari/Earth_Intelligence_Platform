@@ -35,14 +35,14 @@ with col1:
 
     city = st.text_input(
         "City",
-        value="Mumbai",
+        value="Enter city name",
     )
 
 with col2:
 
     country = st.text_input(
         "Country",
-        value="India",
+        value="Enter country name",
     )
 
 run = st.button(

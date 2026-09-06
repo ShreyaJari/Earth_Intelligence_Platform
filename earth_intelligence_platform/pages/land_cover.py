@@ -410,6 +410,8 @@ if product["products"].get("ml_classification") is not None:
 
 else:
 
+    st.subheader("ML Land Cover")
+
     st.info(
         "🔒 ML Land Cover Classification is available in the "
         "full local version. This deployment is optimized for "
