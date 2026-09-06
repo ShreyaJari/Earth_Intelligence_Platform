@@ -40,7 +40,7 @@ geospatial analysis.
 
 ## Live Demo
 
-[**Try it live →**](https://earthintelligenceplatform-upeeswbrd44n7xgbtcwazt.streamlit.app/)
+[**Try it live →**](https://earthintelligenceplatform-fzenzezw6hj837ghqovqlt.streamlit.app/)
 
 > **Note:** Free tier hosting has limited memory (~1GB RAM). Smaller AOIs (e.g.
 > Mumbai) run reliably; very large metropolitan AOIs (e.g. Tokyo) may
