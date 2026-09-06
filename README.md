@@ -42,13 +42,9 @@ geospatial analysis.
 
 [**Try it live →**](https://earthintelligenceplatform-fzenzezw6hj837ghqovqlt.streamlit.app/)
 
-> **Note:** Free tier hosting has limited memory (~1GB RAM). Smaller AOIs (e.g.
-> Mumbai) run reliably; very large metropolitan AOIs (e.g. Tokyo) may
-> be slow or hit resource limits. The Land Cover ML classification
-> model (~1.4GB) is excluded from this deployment for the same reason
-> — WorldCover still works fully; the ML comparison layer is available
-> when running locally. See [Known Limitations](#known-limitations)
-> and [Setup](#setup) for the complete experience.
+>> **Session limit:** Due to free tier memory constraints, the
+> live demo reliably supports running the full pipeline for
+> **up to 2 cities per session**.
 
 ## Demo vs. Full Local Version
 
@@ -240,8 +236,8 @@ overall approach:
 - **Temporal change detection**: architecturally scoped (two Satellite
   Engine runs on pixel aligned deterministic grids would enable direct
   before/after comparison) but not built.
-- **All ML models are pilot-scale**: trained on tens to low thousands
-  of samples, not production-scale datasets. Validation is
+- **All ML models are pilot scale**: trained on tens to low thousands
+  of samples, not production scale datasets. Validation is
   train/test split, not independent held out ground truth.
 - **Land Cover ML classification**: trained using ESA WorldCover as
   weak labels, meaning it cannot exceed WorldCover's own accuracy by
