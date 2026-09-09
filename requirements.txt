@@ -5,6 +5,7 @@ odc-geo==0.5.2
 xarray
 rioxarray
 geopandas
+pyogrio
 shapely
 planetary-computer==1.0.0
 numpy
@@ -19,5 +20,4 @@ folium
 streamlit-folium==0.27.3
 affine
 rasterio
-fiona
 pyproj
