@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software or its results, please cite it as below."
+title: "Earth Intelligence Platform: An Integrated GeoAI System for Environmental Risk Assessment"
+authors:
+  - family-names: "Jariwala"
+    given-names: "Shreya"
+version: "1.0.0"
+date-released: "2026-09-17"
+url: "https://github.com/ShreyaJari/Earth_Intelligence_Platform"
+repository-code: "https://github.com/ShreyaJari/Earth_Intelligence_Platform"
+license: MIT
+keywords:
+  - geoai
+  - remote-sensing
+  - earth-observation
+  - geoai-platform
+  - stac
+  - multi-hazard-risk
+abstract: >
+  An integrated GeoAI platform combining eight modular engines into a
+  single pipeline that takes a place name and produces an integrated
+  environmental risk assessment, with three custom-trained machine
+  learning models for cloud detection, land cover refinement, and
+  wildfire risk calibration.
