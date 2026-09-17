@@ -337,6 +337,13 @@ Streamlit · pystac-client · odc-stac · xarray · rioxarray · GeoPandas ·
 scikit-learn · Plotly · Microsoft Planetary Computer · ESA WorldCover ·
 Open-Meteo · NASA FIRMS
 
+## References
+
+- Zanaga, D. et al. (2021). ESA WorldCover 10 m 2020 v100 [Data set]. https://doi.org/10.5281/zenodo.5571936
+- European Copernicus DEM GLO-30 [Data set]. Copernicus/ESA, via Google Earth Engine. (no single canonical citation DOI is published by Copernicus for this one — cite as "Copernicus DEM GLO-30, European Space Agency, distributed via Google Earth Engine")
+- Open-Meteo. Weather forecast API. https://open-meteo.com/
+NASA FIRMS (Fire Information for Resource Management System). NASA/USGS. https://firms.modaps.eosdis.nasa.gov/
+
 ## Citation
 
 If you reference this project, please cite it as:
